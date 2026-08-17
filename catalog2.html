@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Secure KeyLink | Product Catalog</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap');
+
+:root{
+--bg:#080b16;
+--panel:#12162a;
+--panel2:#18152f;
+--purple:#8b5cf6;
+--purple2:#a855f7;
+--blue:#38bdf8;
+--cyan:#22d3ee;
+--white:#f8fafc;
+--muted:#a7b0c5;
+--line:rgba(139,92,246,.25);
+}
+
+*{box-sizing:border-box}
+
+body{
+margin:0;
+background:#03050b;
+color:var(--white);
+font-family:Inter,"Noto Sans KR",sans-serif;
+overflow:hidden;
+}
+
+.catalog{
+width:100vw;
+height:100vh;
+position:relative;
+}
+
+.page{
+position:absolute;
+inset:0;
+padding:60px 7vw;
+opacity:0;
+transform:translateX(35px);
+transition:.45s ease;
+pointer-events:none;
+overflow:auto;
+background:
+radial-gradient(circle at 80% 20%,rgba(139,92,246,.16),transparent 30%),
+radial-gradient(circle at 15% 85%,rgba(56,189,248,.10),transparent 28%),
+var(--bg);
+}
+
+.page.active{
+opacity:1;
+transform:none;
+pointer-events:auto;
+}
+
+.page-no{
+position:absolute;
+top:35px;
+right:7vw;
+color:#68718a;
+font-size:13px;
+letter-spacing:3px;
+}
+
+.badge{
+display:inline-flex;
+align-items:center;
+gap:8px;
+padding:9px 15px;
+border:1px solid rgba(139,92,246,.4);
+border-radius:999px;
+background:rgba(139,92,246,.08);
+color:#c4b5fd;
+font-size:12px;
+letter-spacing:1.5px;
+font-weight:700;
+}
+
+h1{
+font-size:clamp(52px,7vw,100px);
+line-height:.95;
+margin:25px 0;
+letter-spacing:-5px;
+}
+
+h2{
+font-size:clamp(35px,4vw,62px);
+line-height:1.05;
+margin:22px 0 35px;
+letter-spacing:-2px;
+}
+
+h3{
+margin:0 0 12px;
+font-size:20px;
+}
+
+.gradient{
+background:linear-gradient(100deg,#fff 10%,#c4b5fd 50%,#38bdf8);
+-webkit-background-clip:text;
+color:transparent;
+}
+
+.sub{
+color:var(--muted);
+font-size:18px;
+line-height:1.8;
+max-width:720px;
+}
+
+.hero{
+height:100%;
+display:grid;
+grid-template-columns:1fr 1fr;
+align-items:center;
+gap:40px;
+}
+
+.device-scene{
+height:520px;
+position:relative;
+display:flex;
+align-items:center;
+justify-content:center;
+}
+
+.glow{
+position:absolute;
+width:430px;
+height:430px;
+border-radius:50%;
+background:radial-gradient(circle,rgba(139,92,246,.35),rgba(56,189,248,.08),transparent 65%);
+filter:blur(12px);
+}
+
+.device{
+width:330px;
+height:145px;
+border-radius:28px;
+background:linear-gradient(145deg,#25283a,#090b12);
+border:1px solid rgba(255,255,255,.16);
+box-shadow:
+0 35px 70px rgba(0,0,0,.65),
+0 0 55px rgba(139,92,246,.28);
+position:relative;
+z-index:2;
+transform:rotate(-8deg);
+}
+
+.device:before{
+content:"SECURE";
+position:absolute;
+left:28px;
+top:43px;
+font-size:12px;
+letter-spacing:3px;
+color:#a7b0c5;
+}
+
+.device:after{
+content:"KEYLINK";
+position:absolute;
+left:28px;
+top:65px;
+font-size:21px;
+font-weight:800;
+letter-spacing:2px;
+color:white;
+}
+
+.led{
+position:absolute;
+right:28px;
+top:60px;
+width:14px;
+height:14px;
+border-radius:50%;
+background:#8b5cf6;
+box-shadow:0 0 10px #8b5cf6,0 0 30px #38bdf8;
+}
+
+.usb{
+position:absolute;
+right:-100px;
+top:61px;
+width:110px;
+height:22px;
+background:linear-gradient(#c8ccd4,#777d8c);
+border-radius:3px;
+}
+
+.phone{
+position:absolute;
+left:5%;
+bottom:45px;
+width:155px;
+height:290px;
+border-radius:28px;
+background:#0d101b;
+border:2px solid #33384d;
+box-shadow:0 15px 45px rgba(0,0,0,.6);
+z-index:4;
+padding:28px 13px;
+}
+
+.phone-screen{
+width:100%;
+height:100%;
+border-radius:18px;
+background:
+linear-gradient(160deg,#19152f,#080b16);
+padding:20px 12px;
+}
+
+.signal{
+position:absolute;
+width:290px;
+height:160px;
+border-top:2px solid #8b5cf6;
+border-radius:50%;
+transform:rotate(-20deg);
+filter:drop-shadow(0 0 8px #8b5cf6);
+z-index:1;
+}
+
+.signal:after{
+content:"BLE";
+position:absolute;
+right:35px;
+top:-22px;
+color:#a78bfa;
+font-size:11px;
+letter-spacing:2px;
+}
+
+.cards{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:20px;
+}
+
+.card{
+background:linear-gradient(145deg,rgba(24,21,47,.95),rgba(12,16,30,.95));
+border:1px solid var(--line);
+border-radius:24px;
+padding:27px;
+min-height:190px;
+box-shadow:inset 0 1px rgba(255,255,255,.04);
+}
+
+.icon{
+font-size:29px;
+margin-bottom:18px;
+}
+
+.card p{
+color:var(--muted);
+line-height:1.65;
+font-size:14px;
+}
+
+.spec-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:22px;
+}
+
+.spec{
+background:rgba(18,22,42,.85);
+border:1px solid rgba(255,255,255,.08);
+border-radius:22px;
+padding:26px;
+}
+
+.spec-row{
+display:flex;
+justify-content:space-between;
+gap:20px;
+padding:13px 0;
+border-bottom:1px solid rgba(255,255,255,.07);
+font-size:14px;
+}
+
+.spec-row:last-child
+
+.spec-row span:first-child
+.spec-row span:last-child{text-align:right;font-weight:600}
+
+.flow{
+display:flex;
+align-items:center;
+justify-content:center;
+gap:12px;
+margin:42px 0;
+flex-wrap:wrap;
+}
+
+.flow-box{
+padding:18px 24px;
+border-radius:16px;
+background:#13182b;
+border:1px solid rgba(139,92,246,.35);
+text-align:center;
+min-width:125px;
+font-weight:700;
+}
+
+.arrow{color:#8b5cf6;font-size:24px}
+
+.steps{
+display:grid;
+grid-template-columns:repeat(5,1fr);
+gap:14px;
+}
+
+.step{
+padding:24px 18px;
+border-radius:20px;
+background:linear-gradient(150deg,#17132e,#101628);
+border:1px solid rgba(139,92,246,.22);
+}
+
+.step-num{
+color:#8b5cf6;
+font-size:12px;
+font-weight:800;
+letter-spacing:2px;
+margin-bottom:22px;
+}
+
+.step p{
+color:var(--muted);
+line-height:1.65;
+font-size:13px;
+}
+
+.back{
+height:100%;
+display:flex;
+align-items:center;
+justify-content:center;
+text-align:center;
+}
+
+.back h1{font-size:clamp(55px,8vw,110px)}
+
+.metrics{
+display:flex;
+justify-content:center;
+gap:70px;
+margin:55px 0;
+}
+
+.metric strong{
+display:block;
+font-size:42px;
+color:#a78bfa;
+}
+
+.metric span{
+color:#8b94aa;
+font-size:12px;
+letter-spacing:2px;
+}
+
+.footer{
+position:absolute;
+bottom:30px;
+left:7vw;
+right:7vw;
+display:flex;
+justify-content:space-between;
+color:#68718a;
+font-size:11px;
+letter-spacing:1.5px;
+}
+
+.nav{
+position:fixed;
+z-index:20;
+right:28px;
+bottom:25px;
+display:flex;
+gap:7px;
+}
+
+.nav button{
+width:38px;
+height:38px;
+border-radius:50%;
+border:1px solid rgba(139,92,246,.4);
+background:#101426;
+color:white;
+cursor:pointer;
+}
+
+.nav button:hover
+
+@media(max-width:850px){
+body{overflow:auto}
+.page{position:relative;min-height:100vh;height:auto;padding:45px 25px}
+.page:not(.active){display:none}
+.hero{grid-template-columns:1fr}
+.device-scene{height:350px}
+.cards,.spec-grid,.steps{grid-template-columns:1fr}
+.metrics{gap:25px;flex-wrap:wrap}
+h1{letter-spacing:-3px}
+} </style>
+
+</head>
+
+<body>
+
+<div class="catalog">
+
+<!-- PAGE 1 -->
+
+<section class="page active">
+<div class="page-no">01 / 06</div>
+<div class="hero">
+  <div>
+    <div class="badge">LUNA SECURE TECH · v1.0</div>
+    <h1><span class="gradient">Secure<br>KeyLink</span></h1>
+    <p class="sub">
+      물리적 망분리를 넘어서는<br>
+      <strong style="color:white">하드웨어 무선 타이핑 솔루션.</strong>
+    </p>
+    <p style="margin-top:30px;color:#8b94aa;letter-spacing:2px">
+      NO DRIVER · NO SOFTWARE · PURE HARDWARE HID
+    </p>
+  </div>
+
+  <div class="device-scene">
+    <div class="glow"></div>
+    <div class="phone">
+      <div class="phone-screen">
+        <div style="font-size:10px;color:#8b5cf6;font-weight:800">SECURE KEYLINK</div>
+        <div style="margin-top:35px;color:#e2e8f0;font-size:12px">
+          BLE CONNECTED
+        </div>
+        <div style="height:8px;background:#28243e;border-radius:10px;margin-top:15px">
+          <div style="width:75%;height:100%;background:linear-gradient(90deg,#8b5cf6,#38bdf8);border-radius:10px"></div>
+        </div>
+        <div style="margin-top:35px;padding:10px;border:1px solid #34295b;border-radius:12px;color:#9ca3af;font-size:10px">
+          Ready to transmit...
+        </div>
+      </div>
+    </div>
+    <div class="signal"></div>
+    <div class="device"><div class="led"></div><div class="usb"></div></div>
+  </div>
+</div>
+<div class="footer"><span>SECURE KEYLINK</span><span>WIRELESS HARDWARE HID</span></div>
+</section>
+
+<!-- PAGE 2 -->
+
+<section class="page">
+<div class="page-no">02 / 06</div>
+<div class="badge">CONCEPT</div>
+<h2>보안 환경의 입력,<br><span class="gradient">아직도 직접 타이핑하고 계십니까?</span></h2>
+
+<p class="sub">
+금융권·공공기관·국가 기반시설의 보안 환경에서 발생하는
+반복적인 수작업 입력을 하드웨어 기반 무선 입력으로 단순화합니다.
+</p>
+
+<div class="flow">
+  <div class="flow-box">📱<br>SMARTPHONE</div>
+  <div class="arrow">→</div>
+  <div class="flow-box" style="border-color:#8b5cf6">🟣<br>BLE</div>
+  <div class="arrow">→</div>
+  <div class="flow-box">⌨️<br>KEYLINK</div>
+  <div class="arrow">→</div>
+  <div class="flow-box">🖥️<br>TARGET PC</div>
+</div>
+
+<div class="cards">
+  <div class="card">
+    <div class="icon">🚫</div>
+    <h3>DRIVER FREE</h3>
+    <p>대상 PC에 별도의 전용 프로그램이나 드라이버를 설치하지 않는 하드웨어 중심 구조.</p>
+  </div>
+  <div class="card">
+    <div class="icon">⌨️</div>
+    <h3>HARDWARE HID</h3>
+    <p>표준 USB 키보드 입력 방식으로 PC에 텍스트를 전달합니다.</p>
+  </div>
+  <div class="card">
+    <div class="icon">⚡</div>
+    <h3>WIRELESS INPUT</h3>
+    <p>스마트폰에서 작성한 텍스트를 BLE로 전송하고 USB HID로 출력합니다.</p>
+  </div>
+</div>
+</section>
+
+<!-- PAGE 3 -->
+
+<section class="page">
+<div class="page-no">03 / 06</div>
+<div class="badge">KEY FEATURES</div>
+<h2><span class="gradient">Intelligent Input</span><br>Technology</h2>
+
+<div class="cards">
+  <div class="card">
+    <div class="icon">🧠</div>
+    <h3>Intelligent IME Parsing</h3>
+    <p>한글 초성·중성·종성을 분석하여 한/영 입력 상태에 맞는 키 입력 흐름을 구성합니다.</p>
+    <p style="color:#c4b5fd">한/영 자동 전환 · 혼합 문장 · 소스코드 · 명령어</p>
+  </div>
+
+  <div class="card">
+    <div class="icon">🔄</div>
+    <h3>Anti-Drop Queue</h3>
+    <p>데이터를 20-Byte 단위로 분할하고 ACK 기반 순차 처리하여 무선 전송 과정의 누락을 최소화합니다.</p>
+    <p style="color:#38bdf8">START → DATA → ACK → DATA → END</p>
+  </div>
+
+  <div class="card">
+    <div class="icon">📱</div>
+    <h3>Adaptive Dark UI</h3>
+    <p>야간 관제 및 산업 환경을 고려한 다크 테마와 가변 레이아웃을 적용했습니다.</p>
+    <p style="color:#c4b5fd">Dark Theme · adjustResize · Remote Macro</p>
+  </div>
+</div>
+
+<div style="margin-top:35px;padding:25px;border-radius:20px;background:linear-gradient(100deg,rgba(139,92,246,.13),rgba(56,189,248,.08));border:1px solid rgba(139,92,246,.2)">
+  <div style="font-size:12px;color:#8b5cf6;letter-spacing:2px">PACKET SEQUENCE</div>
+  <div style="font-size:25px;font-weight:800;margin-top:12px">CMD:START → DATA → ACK → DATA → CMD:END</div>
+</div>
+</section>
+
+<!-- PAGE 4 -->
+
+<section class="page">
+<div class="page-no">04 / 06</div>
+<div class="badge">SPECIFICATIONS</div>
+<h2>Hardware & <span class="gradient">Platform</span></h2>
+
+<div class="spec-grid">
+  <div class="spec">
+    <h3>🛠 Hardware</h3>
+    <div class="spec-row"><span>Processor</span><span>ESP32 Nano Core</span></div>
+    <div class="spec-row"><span>Wireless</span><span>BLE / Wi-Fi</span></div>
+    <div class="spec-row"><span>Interface</span><span>USB HID Keyboard</span></div>
+    <div class="spec-row"><span>Mapping</span><span>Keyboard / Logitech-style</span></div>
+    <div class="spec-row"><span>Protocol</span><span>20-Byte Chunking</span></div>
+    <div class="spec-row"><span>Guard Time</span><span>25 ms</span></div>
+  </div>
+
+  <div class="spec">
+    <h3>🖥 Cross Platform</h3>
+    <div class="spec-row"><span>Windows</span><span>Windows 10 / 11</span></div>
+    <div class="spec-row"><span>macOS</span><span>Catalina ~ Sequoia</span></div>
+    <div class="spec-row"><span>Android</span><span>Jetpack Compose</span></div>
+    <div class="spec-row"><span>iOS</span><span>UIKit / Swift</span></div>
+    <br>
+    <h3>🎛 Remote Macro</h3>
+    <div class="spec-row"><span>한/영</span><span>Remote Toggle</span></div>
+    <div class="spec-row"><span>Enter</span><span>Raw 0x28</span></div>
+    <div class="spec-row"><span>Backspace</span><span>Raw 0x2A</span></div>
+  </div>
+</div>
+
+<div style="margin-top:30px;text-align:center">
+  <span class="badge">BLE</span>
+  <span class="badge">USB HID</span>
+  <span class="badge">20 BYTE</span>
+  <span class="badge">25 ms GUARD</span>
+</div>
+</section>
+
+<!-- PAGE 5 -->
+
+<section class="page">
+<div class="page-no">05 / 06</div>
+<div class="badge">HOW TO USE</div>
+<h2>5 Steps to <span class="gradient">Start</span></h2>
+
+<div class="steps">
+  <div class="step">
+    <div class="step-num">01 · PLUG IN</div>
+    <h3>🔌 연결</h3>
+    <p>Secure KeyLink를 대상 PC/Mac의 USB 포트에 연결합니다.</p>
+  </div>
+  <div class="step">
+    <div class="step-num">02 · PAIR</div>
+    <h3>🔗 페어링</h3>
+    <p>모바일 앱에서 BLE 장치 페어링을 시작하고 SecureKeyLink를 선택합니다.</p>
+  </div>
+  <div class="step">
+    <div class="step-num">03 · CONFIG</div>
+    <h3>⚙️ 설정</h3>
+    <p>대상 환경에 맞춰 Windows 또는 Mac을 선택합니다.</p>
+  </div>
+  <div class="step">
+    <div class="step-num">04 · FOCUS</div>
+    <h3>🎯 포커스</h3>
+    <p>메모장이나 터미널 등 입력할 프로그램에서 커서를 활성화합니다.</p>
+  </div>
+  <div class="step">
+    <div class="step-num">05 · TRANSMIT</div>
+    <h3>⚡ 전송</h3>
+    <p>텍스트를 입력하고 BLE 무선 타자 전송 버튼을 누릅니다.</p>
+  </div>
+</div>
+
+<div class="flow" style="margin-top:60px">
+  <div class="flow-box">📱 PHONE</div>
+  <div class="arrow">→</div>
+  <div class="flow-box">🟣 BLE</div>
+  <div class="arrow">→</div>
+  <div class="flow-box">⌨️ KEYLINK</div>
+  <div class="arrow">→</div>
+  <div class="flow-box">🔌 USB</div>
+  <div class="arrow">→</div>
+  <div class="flow-box">🖥 PC</div>
+</div>
+</section>
+
+<!-- PAGE 6 -->
+
+<section class="page">
+<div class="page-no">06 / 06</div>
+<div class="back">
+  <div>
+    <div class="badge">LUNA SECURE TECH</div>
+    <h1><span class="gradient">Secure<br>KeyLink</span></h1>
+    <p class="sub" style="margin:auto">
+      Connect Wirelessly.<br>
+      <strong style="color:white">Type Securely.</strong>
+    </p>
+
+```
+<div class="metrics">
+  <div class="metric"><strong>25</strong><span>MS GUARD</span></div>
+  <div class="metric"><strong>20</strong><span>BYTE CHUNK</span></div>
+  <div class="metric"><strong>BLE</strong><span>WIRELESS</span></div>
+  <div class="metric"><strong>HID</strong><span>USB INPUT</span></div>
+</div>
+
+<div style="color:#8791a9;font-size:13px;line-height:2">
+  <strong style="color:#f8fafc">Luna Secure Tech</strong><br>
+  Secure KeyLink v1.0 · 무선 하드웨어 보안 타자 단말기<br>
+  support@lunasecure.com
+</div>
+
+<div style="margin-top:40px;color:#555e75;font-size:11px;letter-spacing:2px">
+  NO DRIVER · NO SOFTWARE · PURE HARDWARE HID
+</div>
+```
+
+  </div>
+</div>
+</section>
+
+</div>
+
+<div class="nav">
+  <button onclick="prev()">‹</button>
+  <button onclick="next()">›</button>
+</div>
+
+<script>
+const pages=[...document.querySelectorAll('.page')];
+let current=0;
+
+function show(n){
+  current=(n+pages.length)%pages.length;
+  pages.forEach((p,i)=>p.classList.toggle('active',i===current));
+}
+
+function next(){show(current+1)}
+function prev(){show(current-1)}
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='PageDown') next();
+  if(e.key==='ArrowLeft'||e.key==='PageUp') prev();
+});
+
+let startX=0;
+document.addEventListener('touchstart',e=>startX=e.touches[0].clientX);
+document.addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].clientX-startX;
+  if(Math.abs(dx)>60) dx<0?next():prev();
+});
+</script>
+
+</body>
+</html>

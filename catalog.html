@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure KeyLink 공식 카탈로그 (Light Edition)</title>
+    <style>
+        /* 기본 스타일 초기화 */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f4f6f9; color: #333333; line-height: 1.6; }
+        
+        /* 전체 컨테이너 및 페이지 스타일 */
+        .catalog-container { max-width: 900px; margin: 40px auto; padding: 20px; }
+        .page { background: #ffffff; border-radius: 16px; padding: 40px; margin-bottom: 40px; box-shadow: 0 4px 20px rgba(160,175,195,0.15); border: 1px solid #e1e6eb; position: relative; overflow: hidden; }
+        
+        /* 타이포그래피 */
+        h1 { font-size: 42px; font-weight: 800; color: #0a192f; letter-spacing: -1px; margin-bottom: 10px; }
+        h2 { font-size: 24px; font-weight: 700; color: #0a192f; border-left: 4px solid #007aff; padding-left: 12px; margin-bottom: 20px; margin-top: 10px; }
+        h3 { font-size: 18px; font-weight: 600; color: #0056b3; margin-bottom: 8px; }
+        p { color: #555555; font-size: 15px; margin-bottom: 16px; text-align: justify; }
+        .sub-copy { font-size: 18px; color: #4a5568; font-weight: 500; margin-bottom: 30px; }
+        
+        /* 배지 및 강조 효과 */
+        .badge { display: inline-block; background: #e1f0ff; color: #007aff; font-size: 11px; font-weight: bold; padding: 5px 10px; border-radius: 20px; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .highlight { color: #007aff; font-weight: bold; }
+        
+        /* 레이아웃 그리드 시스템 */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 20px; }
+        .card { background: #f8fafc; padding: 24px; border-radius: 12px; border: 1px solid #e2e8f0; }
+        
+        /* 시스템 아키텍처 비주얼 맵 */
+        .flow-container { background: #f1f5f9; padding: 20px; border-radius: 10px; border: 1px dashed #cbd5e1; text-align: center; margin: 20px 0; }
+        .flow-step { display: inline-block; background: #ffffff; border: 1px solid #007aff; padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: bold; color: #0a192f; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .flow-arrow { display: inline-block; margin: 0 10px; color: #007aff; font-weight: bold; }
+        
+        /* 제품 사양 테이블 */
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; background: #ffffff; border-radius: 8px; overflow: hidden; border: 1px solid #e2e8f0; }
+        th, td { padding: 14px 16px; text-align: left; font-size: 14px; }
+        th { background: #f1f5f9; color: #0a192f; font-weight: 600; width: 30%; border-right: 1px solid #e2e8f0; }
+        tr { border-bottom: 1px solid #e2e8f0; }
+        tr:last-child { border-bottom: none; }
+        
+        /* 번호가 매겨진 가이드 */
+        .step-list { list-style: none; counter-reset: step-counter; }
+        .step-item { position: relative; padding-left: 45px; margin-bottom: 20px; }
+        .step-item::before { counter-increment: step-counter; content: counter(step-counter); position: absolute; left: 0; top: 0; width: 30px; height: 30px; background: #007aff; color: white; border-radius: 50%; text-align: center; line-height: 30px; font-weight: bold; font-size: 14px; }
+        
+        /* 페이지 표시기 */
+        .page-number { position: absolute; bottom: 20px; right: 40px; font-size: 12px; color: #94a3b8; font-weight: bold; }
+    </style>
+</head>
+<body>
+<div class="catalog-container">
+
+    <!-- [1 페이지] 커버 디자인 (Technical Light Blue) -->
+    <div class="page" style="text-align: center; padding: 120px 40px; background: linear-gradient(135deg, #ffffff, #eef5ff);">
+        <span class="badge">Security Infrastructure</span>
+        <h1>Secure KeyLink</h1>
+        <div class="sub-copy" style="margin-top: 15px; color: #007aff;">하드웨어 무선 타이핑 솔루션의 새로운 표준</div>
+        <p style="max-width: 500px; margin: 40px auto 0 auto; color: #64748b; font-size: 14px; border-top: 1px solid #e2e8f0; padding-top: 20px;">
+            No Driver. No Software. Pure Hardware HID.<br>
+            물리적 망분리 환경을 극복하는 무선 입력 제어 인프라
+        </p>
+        <div class="page-number">01</div>
+    </div>
+
+    <!-- [2 페이지] 제품 탄생 배경 -->
+    <div class="page">
+        <span class="badge">Concept</span>
+        <h2>보안 정책과 타자 효율의 완벽한 조화</h2>
+        <div style="margin-top: 20px;">
+            <h3 style="color: #df2c2c;">⚠️ 망분리 환경의 고질적인 타이핑 병목</h3>
+            <p>금융권, 국가 공공기관, 국가 보안 시설 등 물리적 망분리가 적용된 환경은 안전을 위해 외부 네트워크와 유선 접속이 원천 차단됩니다. 이로 인해 긴 장문의 소스코드, 시스템 암호화 키, 관제 커맨드를 PC에 입력할 때 작업자가 눈으로 보며 직접 타이핑해야 하므로 막대한 시간 유실과 오타위험이 상존해 왔습니다.</p>
+        </div>
+        <div style="margin-top: 30px; background: #f8fafc; padding: 25px; border-radius: 12px; border: 1px solid #e2e8f0;">
+            <h3>💡 소프트웨어 흔적이 없는 순수 하드웨어 우회 입력</h3>
+            <p style="margin-bottom: 0;"><strong>Secure KeyLink</strong>는 대상 PC/Mac에 그 어떤 백그라운드 프로그램이나 레지스트리 드라이버를 남기지 않습니다. 모바일 앱에서 분석된 데이터 스트림을 무선으로 인계받아, PC 운영체제가 정식 승인하는 <span class="highlight">하드웨어 키보드(USB HID) 가상 신호</span>로만 주입하기 때문에 타겟 시스템의 보안 샌드박스를 완벽하게 우회합니다.</p>
+        </div>
+        <div class="page-number">02</div>
+    </div>
+
+    <!-- [3 페이지] 핵심 기능 및 아키텍처 -->
+    <div class="page">
+        <span class="badge">Technology</span>
+        <h2>지능형 파싱 및 순차 전송 메커니즘</h2>
+        <div class="grid-2">
+            <div class="card">
+                <h3>🧠 지능형 IME 파싱 알고리즘</h3>
+                <p style="font-size: 14px; margin-bottom: 0; color: #555555;">문장을 실시간으로 추적하여 자소 단위(<span class="highlight">초성·중성·종성</span>) 및 영문 블록 단위로 가속 정렬합니다. PC의 현재 한/영 모드를 예측하여 한/영 키 토글을 자동으로 가동하므로 문자 뒤틀림 현상이 없습니다.</p>
+            </div>
+            <div class="card">
+                <h3>🔄 Anti-Drop 동기화 큐 시스템</h3>
+                <p style="font-size: 14px; margin-bottom: 0; color: #555555;">모바일 하드웨어의 무선 패킷 유실을 방지하기 위해 <span class="highlight">GATT 수신 응답형(ACK) 락킹 매니저</span>를 독자 탑재했습니다. 20바이트 청크 단위로 정밀하게 나누어 전송되어 단 1바이트의 신호 누락도 발생하지 않습니다.</p>
+            </div>
+        </div>
+
+        <h2 style="margin-top: 40px;">시스템 구성 프로세스</h2>
+        <div class="flow-container">
+            <div class="flow-step">📱 모바일 앱 (자소 분리)</div>
+            <div class="flow-arrow">➔</div>
+            <div class="flow-step">🔵 동기화 큐 (20Byte 청크)</div>
+            <div class="flow-arrow">➔</div>
+            <div class="flow-step">⌨️ ESP32 단말기 (HID 변환)</div>
+            <div class="flow-arrow">➔</div>
+            <div class="flow-step">🖥️ 대상 PC / Mac 주입</div>
+        </div>
+        <div class="page-number">03</div>
+    </div>
+    <!-- [4 페이지] 기기 사양 및 매크로 -->
+    <div class="page">
+        <span class="badge">Specifications</span>
+        <h2>시스템 스펙 및 원격 매크로</h2>
+        <table>
+            <tr>
+                <th>코어 프로세서</th>
+                <td>ESP32 Nano 임베디드 모듈 (BLE / Wi-Fi 서브시스템 내장)</td>
+            </tr>
+            <tr>
+                <th>에뮬레이션 프로필</th>
+                <td>표준 가상 USB HID 키보드 프로토콜 (Logitech 하드웨어 기기 매핑)</td>
+            </tr>
+            <tr>
+                <th>지원 타겟 운영체제</th>
+                <td>🪟 Windows 10 / 11, 🍏 macOS (Catalina ~ Sequoia 최신 버전 완벽 호환)</td>
+            </tr>
+            <tr>
+                <th>스마트폰 앱 스펙</th>
+                <td>🤖 Android (Jetpack Compose), 🍏 iOS (UIKit Pure Swift) 가속 엔진</td>
+            </tr>
+            <tr>
+                <th>물리 데이터 보호</th>
+                <td>25ms 하드웨어 수신 버퍼 가드 타임 탑재 (데이터 오버플로우 원천 차단)</td>
+            </tr>
+        </table>
+
+        <h3 style="margin-top: 30px;">🕹️ 독립형 원격 제어 매크로 유닛</h3>
+        <p>텍스트 전송 파이프라인 외에 하단의 매크로 단추를 통해 실제 PC를 무선으로 직접 조작할 수 있습니다.</p>
+        <div class="grid-2" style="grid-template-columns: 1fr 1fr 1fr; margin-top: 10px;">
+            <div class="card" style="text-align: center; padding: 15px; background: #ffffff; border: 1px solid #007aff;">
+                <span style="font-size: 20px;">🌐</span>
+                <div style="font-weight: bold; font-size: 14px; margin-top: 5px; color: #0a192f;">한/영 싱크 전환</div>
+            </div>
+            <div class="card" style="text-align: center; padding: 15px; background: #ffffff; border: 1px solid #007aff;">
+                <span style="font-size: 20px;">↩️</span>
+                <div style="font-weight: bold; font-size: 14px; margin-top: 5px; color: #0a192f;">Enter (줄바꿈)</div>
+            </div>
+            <div class="card" style="text-align: center; padding: 15px; background: #ffffff; border: 1px solid #007aff;">
+                <span style="font-size: 20px;">⌫</span>
+                <div style="font-weight: bold; font-size: 14px; margin-top: 5px; color: #0a192f;">Backspace</div>
+            </div>
+        </div>
+        <div class="page-number">04</div>
+    </div>
+
+    <!-- [5 페이지] 가이드 및 후면 마감 -->
+    <div class="page" style="background: linear-gradient(135deg, #ffffff, #f0f4fa);">
+        <span class="badge">User Guide</span>
+        <h2>안전한 운용을 위한 5단계 퀵 가이드</h2>
+        <ol class="step-list" style="margin-top: 25px;">
+            <li class="step-item">
+                <strong style="color: #0a192f;">단말기 플러그인</strong>
+                <p style="font-size: 14px; margin-top: 4px;">ESP32 단말기를 타겟 PC/Mac의 빈 USB 포트에 케이블로 연결합니다.</p>
+            </li>
+            <li class="step-item">
+                <strong style="color: #0a192f;">블루투스 링크 연동</strong>
+                <p style="font-size: 14px; margin-top: 4px;">앱을 실행하고 [BLE 장치 페어링 시작]을 눌러 'SecureKeyLink' 장치를 연동합니다.</p>
+            </li>
+            <li class="step-item">
+                <strong style="color: #0a192f;">OS 환경 동기화</strong>
+                <p style="font-size: 14px; margin-top: 4px;">제어할 PC 환경에 맞추어 상단 탭에서 [Windows] 또는 [Mac] 채널을 일치시킵니다.</p>
+            </li>
+            <li class="step-item">
+                <strong style="color: #0a192f;">커서 포커스 🎯</strong>
+                <p style="font-size: 14px; margin-top: 4px;">PC 모니화면에서 메모장 등 입력을 진행할 프로그램 창 안쪽을 마우스로 클릭해 커서를 활성화합니다.</p>
+            </li>
+            <li class="step-item">
+                <strong style="color: #0a192f;">보안 전송 개시 ⚡</strong>
+                <p style="font-size: 14px; margin-top: 4px;">문장을 입력하고 [무선 타자 전송]을 누르면 자소 분리 기술이 가동되어 원격 타이핑이 실행됩니다.</p>
+            </li>
+        </ol>
+
+        <div style="margin-top: 60px; padding-top: 25px; border-top: 1px dashed #cbd5e1; text-align: center; font-size: 13px; color: #64748b;">
+            <p style="font-weight: bold; color: #0a192f; margin-bottom: 4px;">Luna Secure Technologies</p>
+            <p style="margin-bottom: 2px;">Product: Secure KeyLink v1.0 (무선 하드웨어 보안 타자 단말기)</p>
+            <p>Contact: support@lunasecure.com</p>
+        </div>
+        <div class="page-number">05</div>
+    </div>
+</div>
+</body>
+</html>
+

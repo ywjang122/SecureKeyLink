@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Secure KeyLink BLE 단독 테스트 패널</title>
+    <style>
+        * { box-sizing: border-box; -webkit-box-sizing: border-box; }
+        body { font-family: -apple-system, sans-serif; background-color: #f2f2f7; text-align: center; padding: 20px; margin: 0; }
+        .container { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 100%; max-width: 460px; margin: 20px auto; }
+        h2 { color: #1c1c1e; margin-top: 5px; margin-bottom: 20px; font-size: 22px; }
+        
+        .status-box { background: #e5e5ea; padding: 12px; border-radius: 10px; font-weight: bold; margin-bottom: 20px; font-size: 14px; color: #3a3a3c; }
+        
+        .os-selector { margin-bottom: 15px; display: flex; justify-content: center; gap: 10px; width: 100%; }
+        .os-btn { flex: 1; color: #101010; padding: 12px; border: 1px solid #c7c7cc; border-radius: 20px; background: #fff; cursor: pointer; font-size: 14px; font-weight: bold; }
+        .os-btn.active { background: #007aff; color: #fff; border-color: #007aff; }
+        
+        .btn-conn { width: 100%; padding: 15px; border: 2px solid #5856d6; color: #5856d6; background: #fff; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; margin-bottom: 20px; transition: all 0.2s ease; }
+        
+        textarea { width: 100%; height: 120px; padding: 12px; border: 1px solid #c7c7cc; border-radius: 8px; font-size: 16px; margin-bottom: 15px; resize: none; font-family: inherit; display: block; }
+        
+        .btn-main { width: 100%; padding: 15px; background-color: #34c759; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; display: block; cursor: pointer; margin-bottom: 15px; }
+        .btn-main:disabled { background-color: #aeaeae; cursor: not-allowed; }
+        
+        .cmd-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .btn-cmd { background-color: #007aff; padding: 12px; color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 15px; cursor: pointer; }
+        .btn-cmd:disabled { background-color: #aeaeae; cursor: not-allowed; }
+        .btn-lang { background-color: #5856d6; grid-column: span 2; }
+        
+        .log-box { width: 100%; background: #1c1c1e; color: #34c759; font-family: monospace; font-size: 12px; padding: 10px; border-radius: 6px; text-align: left; height: 100px; overflow-y: auto; white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>⌨️ Secure KeyLink BLE 연동</h2>
+    
+    <div id="statusIndicator" class="status-box">현재 상태: 블루투스 미연결 (Wi-Fi 대기 모드)</div>
+    <button id="btnConnMode" class="btn-conn" onclick="switchAndManageConnectionChannel()">🔗 BLE 장치 페어링 시작</button>
+    
+    <div class="os-selector">
+        <button id="btnWin" class="os-btn active" onclick="setOS('WIN')">🪟 Windows</button>
+        <button id="btnMac" class="os-btn" onclick="setOS('MAC')">🍏 Mac</button>
+    </div>
+    
+    <textarea id="textInput" placeholder="한글과 English 혼합 문장을 입력하세요..."></textarea>
+    
+    <button onclick="executeBleDataTransmissionPipeline()" id="sendBtn" class="btn-main" disabled>⚡ BLE 무선 타자 전송</button>
+    <button onclick="executeBleCancelSignalInterruption()" id="cancelBtn" class="btn-main" style="background-color:#ff9500; display:none;">⏹️ 전송 중단하기</button>
+    
+    <div class="cmd-grid">
+        <button class="btn-cmd btn-lang" id="cmdLang" onclick="executeBleShortcutCommand('LANG')" disabled>🌐 PC 한/영 키 전환</button>
+        <button class="btn-cmd" id="cmdEnter" onclick="executeBleShortcutCommand('ENTER')" disabled>↩️ Enter (줄바꿈)</button>
+        <button class="btn-cmd" id="cmdBack" style="background-color:#ff3b30;" onclick="executeBleShortcutCommand('BACK')" disabled>⌫ Backspace</button>
+    </div>
+    
+    <div class="log-box" id="debugConsole">System: 로컬 테스트 준비 완료. Chrome 또는 Edge 브라우저를 사용해 주세요.</div>
+</div>
+<script>
+let selectedOS = "WIN";
+let currentCommunicationChannel = "WIFI"; 
+let bluetoothPeripheralDevice = null;
+let bluetoothWriteCharacteristic = null;
+
+// ESP32 하드웨어 UUID 주소 동기화 정의
+const TARGET_BLE_SERVICE_UUID = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
+const TARGET_BLE_RX_CHARACTERISTIC_UUID = "6e400002-b5a3-f393-e0a9-e50e24dcca9e";
+
+function printLog(msg) {
+    const consoleBox = document.getElementById("debugConsole");
+    consoleBox.innerText += "\n> " + msg;
+    consoleBox.scrollTop = consoleBox.scrollHeight;
+}
+
+function setOS(o) { 
+    selectedOS = o; 
+    document.getElementById("btnWin").classList.toggle("active", o === "WIN"); 
+    document.getElementById("btnMac").classList.toggle("active", o === "MAC"); 
+    printLog("타겟 OS 설정 변경: " + o);
+}
+
+// BLE 장치 토글 연결 핸들러
+function switchAndManageConnectionChannel() {
+    if (currentCommunicationChannel === "WIFI") {
+        initiateBleHardwareConnection();
+    } else {
+        terminateBleHardwareConnection();
+    }
+}
+
+// 💡 [최종 교정]: 특정 이름 필터 방식을 폐기하고, 주변의 모든 BLE 장치를 강제 스캔하도록 우회 구현한 함수
+async function initiateBleHardwareConnection() {
+    try {
+        printLog("블루투스 페어링 검색 창을 활성화합니다...");
+        document.getElementById("btnConnMode").innerText = "⏳ 블루투스 페어링 장치 검색 중...";
+        
+        // 👑 권한 문제가 없을 때 기기가 누락되는 현상을 완전히 방어하는 acceptAllDevices 파라미터 적용
+        bluetoothPeripheralDevice = await navigator.bluetooth.requestDevice({
+            acceptAllDevices: true,
+            optionalServices: [TARGET_BLE_SERVICE_UUID]
+        });
+        
+        printLog("디바이스 탐색 완료. GATT 서버 연결 시도...");
+        const connectedGattServer = await bluetoothPeripheralDevice.gatt.connect();
+        
+        printLog("서비스 및 특성(Characteristic) 분석 중...");
+        const primaryBleService = await connectedGattServer.getPrimaryService(TARGET_BLE_SERVICE_UUID);
+        bluetoothWriteCharacteristic = await primaryBleService.getCharacteristic(TARGET_BLE_RX_CHARACTERISTIC_UUID);
+        
+        // 통신 모드 상태 변경 적용 및 컨트롤 인터페이스 언락 활성화
+        currentCommunicationChannel = "BLE";
+        document.getElementById("statusIndicator").innerText = "현재 상태: BLE 무선 연결 가동 중 🟢";
+        document.getElementById("statusIndicator").style.background = "#34c759";
+        document.getElementById("statusIndicator").style.color = "#fff";
+        
+        document.getElementById("btnConnMode").innerText = "🔵 BLE 연결 해제하기";
+        document.getElementById("btnConnMode").style.background = "#5856d6";
+        document.getElementById("btnConnMode").style.color = "#fff";
+        
+        setUIElementsDisabled(false);
+        printLog("BLE 페어링 최종 성공! 하드웨어 무선 타자 제어가 가능합니다.");
+        
+        bluetoothPeripheralDevice.addEventListener('gattserverdisconnected', triggerBleDisconnectionCleanup);
+    } catch(err) {
+        console.error(err);
+        printLog("오류 발생 또는 취소됨: " + err.message);
+        triggerBleDisconnectionCleanup();
+    }
+}
+
+function terminateBleHardwareConnection() {
+    if (bluetoothPeripheralDevice && bluetoothPeripheralDevice.gatt.connected) {
+        bluetoothPeripheralDevice.gatt.disconnect();
+    }
+    triggerBleDisconnectionCleanup();
+}
+
+// 블루투스 연결 해제 및 복구 인터페이스 스위칭
+function triggerBleDisconnectionCleanup() {
+    currentCommunicationChannel = "WIFI";
+    bluetoothPeripheralDevice = null;
+    bluetoothWriteCharacteristic = null;
+    
+    document.getElementById("statusIndicator").innerText = "현재 상태: 블루투스 미연결 (Wi-Fi 대기 모드)";
+    document.getElementById("statusIndicator").style.background = "#e5e5ea";
+    document.getElementById("statusIndicator").style.color = "#3a3a3c";
+    
+    document.getElementById("btnConnMode").innerText = "🔗 BLE 장치 페어링 시작";
+    document.getElementById("btnConnMode").style.background = "#fff";
+    document.getElementById("btnConnMode").style.color = "#5856d6";
+    
+    setUIElementsDisabled(true);
+    printLog("블루투스 기기 연동이 안전하게 해제되었습니다.");
+}
+
+function setUIElementsDisabled(status) {
+    document.getElementById("sendBtn").disabled = status;
+    document.getElementById("cmdLang").disabled = status;
+    document.getElementById("cmdEnter").disabled = status;
+    document.getElementById("cmdBack").disabled = status;
+}
+// BLE 데이터 분할 송신 알고리즘 엔진
+async function transmitDataInSlicesViaBle(rawStringPayload) {
+    if (!bluetoothWriteCharacteristic) return;
+    const binEncoder = new TextEncoder();
+    
+    for (let offset = 0; offset < rawStringPayload.length; offset += 20) {
+        let chunkSlice = rawStringPayload.substring(offset, offset + 20);
+        await bluetoothWriteCharacteristic.writeValue(binEncoder.encode(chunkSlice));
+        // 데이터 누락을 원천 봉쇄하는 물리 틱 타임 딜레이 추가
+        await new Promise(resolve => setTimeout(resolve, 25)); 
+    }
+}
+
+// 데이터 수립 파이프라인 연동
+async function executeBleDataTransmissionPipeline() {
+    const t = document.getElementById("textInput").value; 
+    if (!t) { alert("내용을 입력해 주세요."); return; }
+    
+    let q = []; let currentBlockType = ""; let textBuffer = "";
+    
+    for (let i = 0; i < t.length; i++) {
+        let c = t.charCodeAt(i); let s = t[i];
+        let isHangul = (c >= 0xAC00 && c <= 0xD7A3) || (c >= 0x3131 && c <= 0x3163);
+        let targetType = isHangul ? "KOR" : "ENG";
+        if (currentBlockType === "") currentBlockType = targetType;
+        if (currentBlockType !== targetType) {
+            if (textBuffer.length > 0) { q.push({ type: currentBlockType + "_TEXT", val: textBuffer }); textBuffer = ""; }
+            currentBlockType = targetType;
+        }
+        textBuffer += s;
+    }
+    if (textBuffer.length > 0) q.push({ type: currentBlockType + "_TEXT", val: textBuffer });
+
+    document.getElementById("sendBtn").style.display = "none";
+    document.getElementById("cancelBtn").style.display = "block";
+
+    try {
+        const jsonData = JSON.stringify(q);
+        const binEncoder = new TextEncoder();
+        
+        printLog("데이터 전송 프로세스 가동: " + jsonData);
+        
+        // 제어 플래그를 통한 안전 데이터 스트리밍 시작
+        await bluetoothWriteCharacteristic.writeValue(binEncoder.encode("OS_TYPE:" + selectedOS));
+        await new Promise(r => setTimeout(r, 40));
+        
+        await bluetoothWriteCharacteristic.writeValue(binEncoder.encode("CMD:START"));
+        await transmitDataInSlicesViaBle(jsonData);
+        await bluetoothWriteCharacteristic.writeValue(binEncoder.encode("CMD:END"));
+
+        printLog("하드웨어 전송 패킷 주입 완료!");
+        document.getElementById("textInput").value = "";
+    } catch (err) {
+        console.error(err);
+        printLog("무선 스트림 전송 중 에러: " + err.message);
+    } finally {
+        document.getElementById("cancelBtn").style.display = "none";
+        document.getElementById("sendBtn").style.display = "block";
+    }
+}
+
+// 타이핑 즉시 중단 인터럽트 명령 송신기
+async function executeBleCancelSignalInterruption() {
+    if (bluetoothWriteCharacteristic) {
+        const binEncoder = new TextEncoder();
+        await bluetoothWriteCharacteristic.writeValue(binEncoder.encode("CMD:CANCEL"));
+        printLog("인터럽트 [중단 시그널] 패킷이 즉시 전송되었습니다.");
+        document.getElementById("cancelBtn").style.display = "none";
+        document.getElementById("sendBtn").style.display = "block";
+    }
+}
+
+// 개별 리모트 단축키 패킷 스트리머
+async function executeBleShortcutCommand(actionCmd) {
+    if (!bluetoothWriteCharacteristic) return;
+    const binEncoder = new TextEncoder();
+    const q = [{ type: "SHORTCUT", val: actionCmd }];
+    
+    try {
+        printLog("단축키 매크로 주입 실행: " + actionCmd);
+        await bluetoothWriteCharacteristic.writeValue(binEncoder.encode("OS_TYPE:" + selectedOS));
+        await new Promise(r => setTimeout(r, 30));
+        await bluetoothWriteCharacteristic.writeValue(binEncoder.encode("CMD:START"));
+        await transmitDataInSlicesViaBle(JSON.stringify(q));
+        await bluetoothWriteCharacteristic.writeValue(binEncoder.encode("CMD:END"));
+    } catch(err) {
+        printLog("매크로 패킷 실패: " + err.message);
+    }
+}
+</script>
+</body>
+</html>
